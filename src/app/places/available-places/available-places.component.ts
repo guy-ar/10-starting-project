@@ -46,7 +46,7 @@ export class AvailablePlacesComponent implements OnInit {
             return new Error('An error occurred for unauthorized user'); 
           }
           if (error.status === 400) {
-            return new Error('Bad Requesterror occurred for');
+            return new Error('Bad Request error occurred for fetching places');
           }
           return new Error('An error occurred');
         }

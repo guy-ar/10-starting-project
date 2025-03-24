@@ -13,34 +13,39 @@ import { PlacesService } from '../places.service';
   imports: [PlacesContainerComponent, PlacesComponent],
 })
 export class UserPlacesComponent implements OnInit{
-  places = signal<Place[] | undefined>(undefined);
-    isLoading = signal<boolean>(false);
-    error = signal<string | undefined>(undefined);
-    
-    private placesService = inject(PlacesService);
-    private destroyRef = inject(DestroyRef);
-    ngOnInit(): void {
-      this.isLoading.set(true);
-      const placesSub = this.placesService.loadUserPlaces()
-      .subscribe(
-        {
-          next: (places) => {
-            this.places.set(places);
-          },
-          complete: () => {
-            // in complete - for sue no more data is received from observable
-            this.isLoading.set(false);
-          },
-          error: (error: Error) => {
-            //in error - get the response error
-            console.log(error);
-            this.isLoading.set(false);
-            this.error.set(error.message);
-          }
+  private placesService = inject(PlacesService);
+  private destroyRef = inject(DestroyRef);
+  // instead of using the signal directly from the service
+  // we will use the signal here and update it with the data from the service
+  //places = signal<Place[] | undefined>(undefined);
+  places = this.placesService.loadedUserPlaces;
+  isLoading = signal<boolean>(false);
+  error = signal<string | undefined>(undefined);
+  
+  ngOnInit(): void {
+    this.isLoading.set(true);
+    const placesSub = this.placesService.loadUserPlaces()
+    .subscribe(
+      {
+        // no need to continue fetch the data, but handle only error and complete
+        // while data will be retreived directly from the service
+        // next: (places) => {
+        //   this.places.set(places);
+        // },
+        complete: () => {
+          // in complete - for sue no more data is received from observable
+          this.isLoading.set(false);
+        },
+        error: (error: Error) => {
+          //in error - get the response error
+          console.log(error);
+          this.isLoading.set(false);
+          this.error.set(error.message);
         }
-      );
-      this.destroyRef.onDestroy(() =>
-        placesSub.unsubscribe()
-      );
-    }
+      }
+    );
+    this.destroyRef.onDestroy(() =>
+      placesSub.unsubscribe()
+    );
+  }
 }

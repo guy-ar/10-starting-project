@@ -2,7 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 
 import { Place } from './place.model';
 import { HttpClient } from '@angular/common/http';
-import { map, catchError, throwError } from 'rxjs';
+import { map, catchError, throwError, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +10,7 @@ import { map, catchError, throwError } from 'rxjs';
 export class PlacesService {
   private userPlaces = signal<Place[]>([]);
   httpClient = inject(HttpClient);
+  // readonly signal that will hold the user places and exposed outside to pther components 
   loadedUserPlaces = this.userPlaces.asReadonly();
 
   loadAvailablePlaces() {
@@ -17,7 +18,17 @@ export class PlacesService {
   }
 
   loadUserPlaces() {
-    return this.retrievePlaces('http://localhost:3000/user-places', 'fetching favorite places');
+    return this.retrievePlaces('http://localhost:3000/user-places', 'fetching favorite places')
+    .pipe(
+      // possible to use tap to perform side effect - even if we already have pipe in other place
+      // tap will allow to perform side effect without changing the response
+      // in the other components we will remove next, and instead use this copy of user places
+      tap({
+        next: (places) =>{
+          this.userPlaces.set(places);
+        }
+      })
+    );
 
   }
 

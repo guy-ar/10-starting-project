@@ -34,11 +34,27 @@ export class PlacesService {
 
   addPlaceToUserPlaces(userPlace: Place) {
     // update the user places signal with the new place
-    this.userPlaces.update((prevPlaces) => 
-      [...prevPlaces, userPlace]
-    );
+    // this.userPlaces.update((prevPlaces) => 
+    //   [...prevPlaces, userPlace]
+    // );
+    // improve - optimictic approach - in case of error revert back the changes
+    //and prevent adding same place twice
+    const prevPlaces = this.userPlaces();
+    if (!prevPlaces.some((place) => place.id === userPlace.id)) {
+      // only if not found add the place
+      this.userPlaces.set([...prevPlaces, userPlace]);
+    }
     
     return this.httpClient.put('http://localhost:3000/user-places', {placeId: userPlace.id})
+    .pipe(
+      catchError((error) => {
+        // in case of error revert back the changes
+        this.userPlaces.set(prevPlaces);
+        return throwError(() =>{          
+           new Error('An error occurred while adding place to user places');
+        });
+      })
+    );
   }
 
   removeUserPlace(place: Place) {}

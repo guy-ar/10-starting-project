@@ -20,7 +20,7 @@ app.use((req, res, next) => {
 
 app.get("/places", async (req, res) => {
   await new Promise((resolve) => setTimeout(resolve, 3000));
-  //res.status(500).json({ message: "500 - Internal Server Error" });
+  // res.status(500).json({ message: "500 - Internal Server Error" });
 //});
   const fileContent = await fs.readFile("./data/places.json");
 
@@ -38,28 +38,29 @@ app.get("/user-places", async (req, res) => {
 });
 
 app.put("/user-places", async (req, res) => {
-  const placeId = req.body.placeId;
+  res.status(500).json({ message: "500 - Internal Server Error" });
+  // const placeId = req.body.placeId;
 
-  const fileContent = await fs.readFile("./data/places.json");
-  const placesData = JSON.parse(fileContent);
+  // const fileContent = await fs.readFile("./data/places.json");
+  // const placesData = JSON.parse(fileContent);
 
-  const place = placesData.find((place) => place.id === placeId);
+  // const place = placesData.find((place) => place.id === placeId);
 
-  const userPlacesFileContent = await fs.readFile("./data/user-places.json");
-  const userPlacesData = JSON.parse(userPlacesFileContent);
+  // const userPlacesFileContent = await fs.readFile("./data/user-places.json");
+  // const userPlacesData = JSON.parse(userPlacesFileContent);
 
-  let updatedUserPlaces = userPlacesData;
+  // let updatedUserPlaces = userPlacesData;
 
-  if (!userPlacesData.some((p) => p.id === place.id)) {
-    updatedUserPlaces = [...userPlacesData, place];
-  }
+  // if (!userPlacesData.some((p) => p.id === place.id)) {
+  //   updatedUserPlaces = [...userPlacesData, place];
+  // }
 
-  await fs.writeFile(
-    "./data/user-places.json",
-    JSON.stringify(updatedUserPlaces)
-  );
+  // await fs.writeFile(
+  //   "./data/user-places.json",
+  //   JSON.stringify(updatedUserPlaces)
+  // );
 
-  res.status(200).json({ userPlaces: updatedUserPlaces });
+  // res.status(200).json({ userPlaces: updatedUserPlaces });
 });
 
 app.delete("/user-places/:id", async (req, res) => {

@@ -3,6 +3,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { Place } from './place.model';
 import { HttpClient } from '@angular/common/http';
 import { map, catchError, throwError, tap } from 'rxjs';
+import { ErrorService } from '../shared/error.service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +11,7 @@ import { map, catchError, throwError, tap } from 'rxjs';
 export class PlacesService {
   private userPlaces = signal<Place[]>([]);
   httpClient = inject(HttpClient);
+  errorService = inject(ErrorService);
   // readonly signal that will hold the user places and exposed outside to pther components 
   loadedUserPlaces = this.userPlaces.asReadonly();
 
@@ -50,6 +52,7 @@ export class PlacesService {
       catchError((error) => {
         // in case of error revert back the changes
         this.userPlaces.set(prevPlaces);
+        this.errorService.showError('An error occurred while adding place to user places');
         return throwError(() =>{          
            new Error('An error occurred while adding place to user places');
         });

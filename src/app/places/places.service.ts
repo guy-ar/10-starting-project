@@ -60,7 +60,23 @@ export class PlacesService {
     );
   }
 
-  removeUserPlace(place: Place) {}
+  removeUserPlace(userPlace: Place) {
+    const prevPlaces = this.userPlaces();
+    if (prevPlaces.some((place) => place.id === userPlace.id)) {
+      this.userPlaces.set(prevPlaces.filter((p) => p.id !== userPlace.id));
+    }
+    return this.httpClient.delete('http://localhost:3000/user-places/' + userPlace.id)
+    .pipe(
+      catchError((error) => {
+        this.userPlaces.set(prevPlaces);
+        this.errorService.showError('An error occurred while removing place from user places');
+        return throwError(() => {
+          new Error('An error occurred while removing place from user places');
+        });
+      }
+      )
+    );
+  }
 
   retrievePlaces(url: string, errorMessage: string) {
     return this.httpClient.get<{places: Place[]}>(url)

@@ -48,4 +48,8 @@ export class UserPlacesComponent implements OnInit{
       placesSub.unsubscribe()
     );
   }
+
+  onRemovePlace(place: Place) {
+    this.placesService.removeUserPlace(place).subscribe();
+  }
 }
